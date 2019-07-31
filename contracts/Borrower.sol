@@ -5,7 +5,7 @@ pragma solidity 0.5.10;
  */
 
 contract Planck {
-    function borrow(uint256 _ethAmount) external borrowLock {}
+    function borrow(uint256 _ethAmount) external {}
     function repayDebt(address _borrower) public payable {}
     function borrowerDebt(address _borrower) public view returns(uint256) {}
     function currentLiquidity() external view returns(uint256) {}
@@ -33,7 +33,7 @@ contract Borrower {
         //simple change of state, but could do all sorts of crazy stuff here
         simpleState++;
         //query debt, could also be handled internally
-        uint256 debt = plank.borrowerDebt(address(this));
+        uint256 debt = planck.borrowerDebt(address(this));
         //raw call method, could also use repayDebt        
         (_res, _data) = address(planck).call.value(debt)("");
         return (_res, _data);
