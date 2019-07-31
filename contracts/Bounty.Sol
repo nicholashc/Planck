@@ -1,0 +1,56 @@
+pragma solidity 0.5.10;
+
+/**
+ * Simple bug bounty to test the core Planck logic.
+ * 
+ * It will last at least 30 days (or much less if someone can exploit it);
+ *
+ * More value may be added as time goes on.
+ */
+
+contract PlankBugBounty {
+
+
+	bool public reentracyGuard;
+
+	address payable public creator;
+	uint256 public bountyDuration;
+
+	constructor() public payable {
+		require (msg.value >= 0.5 ether);
+		creator = msg.sender;
+		bountyDuration = now + 30 days;
+	}
+
+	function borrow() external returns(bool result){
+		//no rentrancy before this function completes execution
+		require (!reentracyGuard);
+		//record balance at start of tx
+		uint256 initalBalance = address(this).balance;
+		//set mutex
+		reentracyGuard = true;
+		//send the full contract balance to anyone
+		//reserve a little extra gas plus, the 1/64 default stipend to complete execution
+		(result, ) = msg.sender.call.gas(gasleft() - 10000).value(initalBalance)(""); 
+		
+		//...anything can happen here once the funds are transfered
+
+		//call must return true
+		require (result);
+		//balance must be returned (via fallback or self destruct)
+		require (address(this).balance >= initalBalance);	
+		//reset mutex
+		reentracyGuard = false; 
+	}
+
+	function() external payable {}
+
+	//creator can recover balance after 30 days if it still exists
+	function creatorWithdraw() external {
+		require (msg.sender == creator);
+		require (now >= bountyDuration);
+		creator.transfer(address(this).balance);
+	}
+	
+	
+}
