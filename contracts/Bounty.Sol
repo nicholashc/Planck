@@ -10,7 +10,6 @@ pragma solidity 0.5.10;
 
 contract PlankBugBounty {
 
-
 	bool public reentracyGuard;
 
 	address payable public creator;
