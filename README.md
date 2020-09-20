@@ -1,3 +1,5 @@
+*Update Sept 19, 2020: so there's this thing called flash loans now that are kind of a big deal"
+
 # Planck
 Planck is a speculative proof-of-concept/thought experiment for a sub-transaction liquidity protocol on Ethereum. 
 
